@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Wishlist - ShowTime</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(to bottom right, #f9fafb, #eef2ff);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-gray-100">
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-ticket-alt text-blue-600 text-xl"></i>
+                    </div>
+                    <a href="/" class="text-2xl font-bold">My Show Time</a>
+                </div>
+
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="hover:text-blue-200 transition">Concerts</a>
+                    <a href="/groups" class="hover:text-blue-200 transition">Groupes</a>
+                    <a href="/wishlist" class="hover:text-blue-200 transition font-bold">Wishlist</a>
+                    <% if (user && user.isAdmin) { %>
+                        <a href="/admin" class="hover:text-blue-200 transition">Admin</a>
+                        <% } %>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <% if (user) { %>
+                        <a href="/users/me" class="hidden md:flex items-center space-x-2 text-white hover:text-blue-200 transition">
+                            <img src="<%= user.photo_url || 'https://static.vecteezy.com/system/resources/previews/046/010/545/non_2x/user-icon-simple-design-free-vector.jpg' %>" alt="User" class="h-8 w-8 rounded-full border-2 border-white" />
+                            <span class="font-medium"><%= user.name %></span>
+                        </a>
+                        <form action="/auth/logout" method="post">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                                Déconnexion
+                            </button>
+                        </form>
+                        <% } else { %>
+                            <a href="/auth/login" class="hover:text-blue-200 transition">Connexion</a>
+                            <a href="/auth/register" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition">
+                            Inscription
+                        </a>
+                            <% } %>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">
+                <i class="fas fa-heart text-red-600 mr-3"></i> Ma Wishlist
+            </h1>
+            <% if (groups.length > 0 || concerts.length > 0) { %>
+                <button onclick="clearWishlist()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition">
+                    <i class="fas fa-trash mr-2"></i>
+                    Vider la wishlist
+                </button>
+                <% } %>
+        </div>
+
+        <% if (groups.length === 0 && concerts.length === 0) { %>
+            <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                <i class="fas fa-heart-broken text-gray-300 text-6xl mb-4"></i>
+                <h2 class="text-2xl font-semibold text-gray-600 mb-2">Votre wishlist est vide</h2>
+                <p class="text-gray-500 mb-6">Ajoutez des groupes et des concerts à vos favoris pour les retrouver ici</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="/" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded transition">
+                        <i class="fas fa-music mr-2"></i> Voir les concerts
+                    </a>
+                    <a href="/groups" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded transition">
+                        <i class="fas fa-users mr-2"></i> Voir les groupes
+                    </a>
+                </div>
+            </div>
+            <% } else { %>
+
+                <% if (groups.length > 0) { %>
+                    <section class="mb-12">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-users text-blue-600 mr-2"></i> Groupes favoris (
+                            <%= groups.length %>)
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <% groups.forEach(group => { %>
+                                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                                    <% if (group.picture_url) { %>
+                                        <img src="<%= group.picture_url %>" alt="<%= group.name %>" class="w-full h-48 object-cover">
+                                        <% } else { %>
+                                            <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                                                <i class="fas fa-users text-white text-6xl"></i>
+                                            </div>
+                                            <% } %>
+                                                <div class="p-4">
+                                                    <div class="flex items-start justify-between mb-2">
+                                                        <h3 class="text-xl font-bold text-gray-800">
+                                                            <%= group.name %>
+                                                        </h3>
+                                                        <button onclick="toggleGroupFavorite('<%= group._id %>')" class="text-red-600 hover:text-red-700 text-xl transition" id="group-heart-<%= group._id %>">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                                    </div>
+                                                    <% if (group.genre) { %>
+                                                        <p class="text-gray-600 mb-3">
+                                                            <i class="fas fa-music mr-1"></i>
+                                                            <%= group.genre %>
+                                                        </p>
+                                                        <% } %>
+                                                            <a href="/groups/<%= group._id %>/detail" class="block text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition">Voir détails</a>
+                                                </div>
+                                </div>
+                                <% }); %>
+                        </div>
+                    </section>
+                    <% } %>
+
+                        <% if (concerts.length > 0) { %>
+                            <section>
+                                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                                    <i class="fas fa-music text-green-600 mr-2"></i> Concerts favoris (
+                                    <%= concerts.length %>)
+                                </h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <% concerts.forEach(concert => { %>
+                                        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition">
+                                            <div class="flex items-start justify-between mb-4">
+                                                <h3 class="text-xl font-bold text-gray-800">
+                                                    <%= concert.name %>
+                                                </h3>
+                                                <button onclick="toggleConcertFavorite('<%= concert._id %>')" class="text-red-600 hover:text-red-700 text-xl transition" id="concert-heart-<%= concert._id %>">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                            </div>
+                                            <div class="space-y-2 mb-4">
+                                                <p class="text-gray-600">
+                                                    <i class="fas fa-calendar mr-2"></i>
+                                                    <%= new Date(concert.date).toLocaleDateString('fr-FR', { 
+                                            day: 'numeric', 
+                                            month: 'long', 
+                                            year: 'numeric' 
+                                        }) %>
+                                                </p>
+                                                <p class="text-gray-600">
+                                                    <i class="fas fa-map-marker-alt mr-2"></i>
+                                                    <%= concert.place %>
+                                                </p>
+                                                <% if (concert.price) { %>
+                                                    <p class="text-green-600 font-bold text-lg">
+                                                        <i class="fas fa-ticket-alt mr-2"></i>
+                                                        <%= concert.price %> FCFA
+                                                    </p>
+                                                    <% } %>
+                                            </div>
+                                            <a href="/concerts/<%= concert._id %>/detail" class="block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded transition">
+                                    Voir détails
+                                </a>
+                                        </div>
+                                        <% }); %>
+                                </div>
+                            </section>
+                            <% } %>
+                                <% } %>
+    </main>
+
+    <script>
+        async function toggleGroupFavorite(groupId) {
+            try {
+                const response = await fetch(`/wishlist/groups/${groupId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erreur lors du retrait du favori');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du retrait du favori');
+            }
+        }
+
+        async function toggleConcertFavorite(concertId) {
+            try {
+                const response = await fetch(`/wishlist/concerts/${concertId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erreur lors du retrait du favori');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du retrait du favori');
+            }
+        }
+
+        async function clearWishlist() {
+            if (!confirm('Êtes-vous sûr de vouloir vider votre wishlist ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/wishlist', {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la suppression de la wishlist');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression de la wishlist');
+            }
+        }
+    </script>
+
+    <%- include('layout/footer') %>
+
+</body>
+
+</html>

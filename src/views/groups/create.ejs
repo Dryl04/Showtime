@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Groupe - MyShowTime</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/admin/dashboard" class="flex items-center hover:text-blue-200 transition">
+                        <i class="fas fa-arrow-left mr-3 text-xl"></i>
+                        <h1 class="text-xl font-semibold">Retour au Dashboard</h1>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <a href="/" class="hover:text-blue-200 transition">
+                        <i class="fas fa-home mr-2"></i>Accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                <i class="fas fa-music text-blue-600 text-4xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Créer un Groupe Musical</h1>
+            <p class="text-gray-600">Ajoutez un nouveau groupe ou artiste à la plateforme</p>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+
+            <% if (locals.error) { %>
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <p>
+                            <%= error %>
+                        </p>
+                    </div>
+                </div>
+                <% } %>
+
+                    <form action="/groups" method="POST" class="space-y-6">
+
+                        <!-- Nom du groupe -->
+                        <div>
+                            <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-users text-blue-600 mr-2"></i>Nom du Groupe *
+          </label>
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ex: The Beatles, Coldplay, Kendrick Lamar...">
+                            <p class="text-xs text-gray-500 mt-1">Le nom doit être unique</p>
+                        </div>
+
+                        <!-- Genre musical -->
+                        <div>
+                            <label for="genre" class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-guitar text-blue-600 mr-2"></i>Genre Musical *
+          </label>
+                            <select id="genre" name="genre" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors appearance-none bg-white">
+            <option value="">-- Sélectionnez un genre --</option>
+            <option value="rock">Rock</option>
+            <option value="pop">Pop</option>
+            <option value="k-pop">K-Pop</option>
+            <option value="jazz">Jazz</option>
+            <option value="classique">Classique</option>
+            <option value="electronique">Électronique</option>
+            <option value="hip-hop">Hip-Hop</option>
+            <option value="metal">Metal</option>
+            <option value="reggae">Reggae</option>
+            <option value="blues">Blues</option>
+            <option value="country">Country</option>
+            <option value="rnb">R&B</option>
+            <option value="indie">Indie</option>
+            <option value="slam">Slam</option>
+            <option value="zinli">Zinli</option>
+            <option value="toba">Toba</option>
+            <option value="agbadja">Agbadja</option>
+            <option value="autre">Autre</option>
+          </select>
+                        </div>
+
+                        <!-- URL de l'image -->
+                        <div>
+                            <label for="picture_url" class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-image text-blue-600 mr-2"></i>URL de l'Image *
+          </label>
+                            <input type="url" id="picture_url" name="picture_url" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors" placeholder="https://example.com/image.jpg">
+                            <p class="text-xs text-gray-500 mt-1">L'image sera affichée sur la plateforme (format HTTPS recommandé)</p>
+                        </div>
+
+                        <!-- Prévisualisation de l'image -->
+                        <div id="image-preview" class="hidden">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-eye text-blue-600 mr-2"></i>Prévisualisation
+          </label>
+                            <div class="border-2 border-gray-200 rounded-lg p-4 bg-gray-50">
+                                <img id="preview-img" src="" alt="Prévisualisation" class="w-full h-64 object-cover rounded-lg">
+                            </div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="flex space-x-4 pt-4">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <i class="fas fa-plus-circle mr-2"></i>Créer le Groupe
+          </button>
+                            <a href="/admin/dashboard" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center">
+                                <i class="fas fa-times mr-2"></i>Annuler
+                            </a>
+                        </div>
+
+                    </form>
+        </div>
+
+        <!-- Informations supplémentaires -->
+        <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+            <div class="flex items-start">
+                <i class="fas fa-info-circle text-blue-500 text-xl mr-3 mt-1"></i>
+                <div>
+                    <h3 class="font-semibold text-blue-800 mb-2">Conseils pour ajouter un groupe</h3>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Vérifiez que le nom du groupe n'existe pas déjà</li>
+                        <li>• Utilisez une image de haute qualité (minimum 800x600px)</li>
+                        <li>• Choisissez le genre musical le plus représentatif</li>
+                        <li>• L'image doit être accessible publiquement (HTTPS)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript pour la prévisualisation -->
+    <script>
+        const pictureUrlInput = document.getElementById('picture_url');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+
+        pictureUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                previewImg.src = url;
+                imagePreview.classList.remove('hidden');
+
+                // Gérer les erreurs de chargement d'image
+                previewImg.onerror = function() {
+                    imagePreview.classList.add('hidden');
+                };
+            } else {
+                imagePreview.classList.add('hidden');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

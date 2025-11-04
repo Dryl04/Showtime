@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= group.name %> - MyShowTime</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(255, 255, 255, 1) 100%);
+        }
+        
+        .genre-badge {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-gray-50">
+
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="bg-white rounded-full p-2 shadow-lg">
+                        <i class="fas fa-ticket-alt text-blue-600 text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">My Show Time</span>
+                </a>
+
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="/" class="text-white hover:text-blue-200 font-medium transition">Concerts</a>
+                    <a href="/groups" class="text-white hover:text-blue-200 font-medium transition">Groupes</a>
+                    <% if (user) { %>
+                        <a href="/wishlist" class="text-white hover:text-blue-200 font-medium transition">Wishlist</a>
+                        <% } %>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <% if (user) { %>
+                        <a href="/users/me" class="text-white hover:text-blue-200 transition">
+                            <i class="fas fa-user mr-2"></i>
+                            <%= user.name %>
+                        </a>
+                        <form action="/auth/logout" method="post" class="inline">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                                Déconnexion
+                            </button>
+                        </form>
+                        <% } else { %>
+                            <a href="/auth/login" class="text-white hover:text-blue-200 transition">Connexion</a>
+                            <a href="/auth/register" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition">Inscription</a>
+                            <% } %>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <div class="relative h-96 overflow-hidden">
+            <% if (group.picture_url) { %>
+                <img src="<%= group.picture_url %>" alt="<%= group.name %>" class="w-full h-full object-cover">
+                <% } else { %>
+                    <div class="w-full h-full bg-gradient-to-br from-blue-600 via-blue-500 to-green-500 flex items-center justify-center">
+                        <i class="fas fa-music text-white text-9xl opacity-30"></i>
+                    </div>
+                    <% } %>
+
+                        <div class="absolute inset-0 hero-gradient"></div>
+
+                        <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
+                            <div class="max-w-7xl mx-auto">
+                                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                                    <div>
+                                        <h1 class="text-5xl md:text-6xl font-extrabold mb-3 drop-shadow-2xl">
+                                            <%= group.name %>
+                                        </h1>
+                                        <span class="genre-badge inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-full font-bold text-lg shadow-xl">
+                                <i class="fas fa-music mr-2"></i> <%= group.genre.toUpperCase() %>
+                            </span>
+                                    </div>
+
+                                    <% if (user) { %>
+                                        <button onclick="toggleGroupFavorite('<%= group._id %>')" id="group-heart-<%= group._id %>" class="flex items-center gap-3 bg-white text-red-600 px-6 py-3 rounded-xl hover:bg-red-50 transition shadow-xl font-bold text-lg">
+                                <i class="far fa-heart text-2xl"></i>
+                                <span>Ajouter aux favoris</span>
+                            </button>
+                                        <% } %>
+                                </div>
+                            </div>
+                        </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <a href="/groups" class="inline-flex items-center text-blue-600 hover:text-blue-800 transition font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i> Retour aux groupes
+            </a>
+        </div> <br>
+
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 -mt-8">
+                <div class="bg-white rounded-2xl shadow-xl p-6 card-hover border-t-4 border-blue-600">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium mb-1">Concerts</p>
+                            <p class="text-4xl font-bold text-blue-600" id="concerts-count">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </p>
+                        </div>
+                        <div class="bg-blue-100 p-4 rounded-full">
+                            <i class="fas fa-calendar-alt text-blue-600 text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-6 card-hover border-t-4 border-green-600">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium mb-1">Style Musical</p>
+                            <p class="text-2xl font-bold text-green-600">
+                                <%= group.genre %>
+                            </p>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-full">
+                            <i class="fas fa-guitar text-green-600 text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xl p-6 card-hover border-t-4 border-red-600">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium mb-1">Depuis</p>
+                            <p class="text-2xl font-bold text-red-600">
+                                <%= new Date(group.createdAt).getFullYear() %>
+                            </p>
+                        </div>
+                        <div class="bg-red-100 p-4 rounded-full">
+                            <i class="fas fa-clock text-red-600 text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">
+                        <i class="fas fa-ticket-alt text-blue-600 mr-3"></i> Concerts à venir
+                    </h2>
+                </div>
+
+                <div id="concerts-list" class="space-y-4">
+                    <div class="text-center py-8">
+                        <i class="fas fa-spinner fa-spin text-blue-600 text-4xl mb-4"></i>
+                        <p class="text-gray-500">Chargement des concerts...</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-info-circle text-blue-600 mr-3"></i> À propos
+                </h2>
+                <div class="prose prose-lg max-w-none text-gray-700">
+                    <p class="text-xl leading-relaxed mb-4">
+                        <strong><%= group.name %></strong> est un groupe de musique
+                        <%= group.genre %> qui fait vibrer les scènes depuis
+                            <%= new Date(group.createdAt).getFullYear() %>.
+                    </p>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Découvrez leurs concerts à venir et ne manquez pas l'occasion de les voir en live ! Ajoutez ce groupe à vos favoris pour être informé de leurs prochaines dates.
+                    </p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t">
+                    <p class="text-sm font-semibold text-gray-600 mb-3">Partager ce groupe :</p>
+                    <div class="flex gap-3">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="fab fa-facebook-f mr-2"></i> Facebook
+                        </button>
+                        <button class="bg-blue-400 text-white px-4 py-2 rounded-lg hover:bg-blue-500 transition">
+                            <i class="fab fa-twitter mr-2"></i> Twitter
+                        </button>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        async function toggleGroupFavorite(groupId) {
+            const button = document.getElementById(`group-heart-${groupId}`);
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+            const isFavorite = icon.classList.contains('fas');
+
+            try {
+                const method = isFavorite ? 'DELETE' : 'POST';
+                const response = await fetch(`/wishlist/groups/${groupId}`, {
+                    method: method,
+                });
+
+                if (response.ok) {
+                    if (isFavorite) {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        button.classList.remove('bg-red-50', 'text-red-700');
+                        button.classList.add('bg-white', 'text-red-600');
+                        text.textContent = 'Ajouter aux favoris';
+                    } else {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        button.classList.remove('bg-white', 'text-red-600');
+                        button.classList.add('bg-red-50', 'text-red-700');
+                        text.textContent = 'Retirer des favoris';
+                    }
+                } else {
+                    alert('Erreur lors de la modification des favoris');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la modification des favoris');
+            }
+        }
+
+        async function loadGroupConcerts() {
+            const groupName = '<%= group.name %>';
+            const concertsList = document.getElementById('concerts-list');
+            const concertsCount = document.getElementById('concerts-count');
+
+            try {
+                const response = await fetch(`/concerts/group/${encodeURIComponent(groupName)}`);
+                const concerts = await response.json();
+
+                concertsCount.textContent = concerts.length;
+
+                if (concerts.length === 0) {
+                    concertsList.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
+                            <p class="text-gray-500 text-lg">Aucun concert prévu pour le moment</p>
+                            <p class="text-gray-400 text-sm mt-2">Revenez bientôt pour découvrir les prochaines dates !</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                concertsList.innerHTML = concerts.map(concert => {
+                            const date = new Date(concert.date);
+                            const dateStr = date.toLocaleDateString('fr-FR', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            });
+                            const timeStr = date.toLocaleTimeString('fr-FR', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            const ticketsLeft = concert.ticket_left || 0;
+                            const isAlmostFull = ticketsLeft < 10 && ticketsLeft > 0;
+                            const isSoldOut = ticketsLeft === 0;
+
+                            return `
+                        <div class="card-hover bg-gray-50 rounded-xl p-6 border-l-4 border-blue-600">
+                            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                                        ${concert.name_concert}
+                                    </h3>
+                                    <div class="flex flex-wrap gap-4 text-gray-600">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
+                                            <span>${dateStr}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock text-green-600 mr-2"></i>
+                                            <span>${timeStr}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-map-marker-alt text-red-600 mr-2"></i>
+                                            <span>${concert.place}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 flex items-center gap-3">
+                                        <span class="text-2xl font-bold text-green-600">
+                                            ${concert.price} FCFA
+                                        </span>
+                                        ${isSoldOut ? 
+                                            '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i> Complet</span>' :
+                                            isAlmostFull ?
+                                            `<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold"><i class="fas fa-fire mr-1"></i> Plus que ${ticketsLeft} places</span>` :
+                                            `<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold"><i class="fas fa-ticket-alt mr-1"></i> ${ticketsLeft} places disponibles</span>`
+                                        }
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    ${isSoldOut ? 
+                                        '<button disabled class="bg-gray-400 text-white px-6 py-3 rounded-lg font-bold cursor-not-allowed">Complet</button>' :
+                                        `<a href="/concerts/${concert._id}/detail" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold text-center transition shadow-lg hover:shadow-xl transform hover:scale-105">
+                                            <i class="fas fa-eye mr-2"></i>Voir détails
+                                        </a>`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Erreur chargement concerts:', error);
+                concertsList.innerHTML = `
+                    <div class="text-center py-12 text-red-600">
+                        <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                        <p>Erreur lors du chargement des concerts</p>
+                    </div>
+                `;
+                concertsCount.textContent = '0';
+            }
+        }
+
+        <% if (user) { %>
+        async function checkFavoriteStatus() {
+            try {
+                const response = await fetch('/wishlist/groups/<%= group._id %>/check');
+                const data = await response.json();
+
+                if (data.inWishlist) {
+                    const button = document.getElementById('group-heart-<%= group._id %>');
+                    const icon = button.querySelector('i');
+                    const text = button.querySelector('span');
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    button.classList.remove('bg-white', 'text-red-600');
+                    button.classList.add('bg-red-50', 'text-red-700');
+                    text.textContent = 'Retirer des favoris';
+                }
+            } catch (error) {
+                console.error('Erreur vérification wishlist:', error);
+            }
+        }
+        <% } %>
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGroupConcerts();
+            <% if (user) { %>
+            checkFavoriteStatus();
+            <% } %>
+        });
+    </script>
+
+    <%- include('../layout/footer') %>
+
+</body>
+
+</html>

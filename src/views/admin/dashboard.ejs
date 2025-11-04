@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - MyShowTime</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-crown text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Dashboard Administrateur</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="hover:text-gray-200 transition">
+                        <i class="fas fa-home mr-2"></i>Accueil
+                    </a>
+                    <form action="/auth/logout" method="POST" class="inline">
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition">
+              <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+            </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Utilisateurs</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <%= kpis.totalUsers %>
+                        </p>
+                    </div>
+                    <div class="bg-blue-100 rounded-full p-4">
+                        <i class="fas fa-users text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Groupes</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <%= kpis.totalGroups %>
+                        </p>
+                    </div>
+                    <div class="bg-blue-100 rounded-full p-4">
+                        <i class="fas fa-music text-blue-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Concerts</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <%= kpis.totalConcerts %>
+                        </p>
+                        <p class="text-green-600 text-xs mt-1">
+                            <%= kpis.upcomingConcerts %> à venir
+                        </p>
+                    </div>
+                    <div class="bg-green-100 rounded-full p-4">
+                        <i class="fas fa-calendar-alt text-green-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6 card-hover transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Revenus Totaux</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-2">
+                            <%= kpis.totalRevenue.toLocaleString('fr-FR') %> FCFA</p>
+                        <p class="text-blue-600 text-xs mt-1">
+                            <%= kpis.totalBookings %> réservations
+                        </p>
+                    </div>
+                    <div class="bg-yellow-100 rounded-full p-4">
+                        <i class="fas fa-coins text-yellow-600 text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-700">Tickets Vendus</h3>
+                    <i class="fas fa-ticket-alt text-blue-600"></i>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">
+                    <%= kpis.ticketsSold %>
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-700">Tickets Disponibles</h3>
+                    <i class="fas fa-warehouse text-teal-600"></i>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">
+                    <%= kpis.ticketsAvailable %>
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-700">Réservations (7j)</h3>
+                    <i class="fas fa-chart-line text-green-600"></i>
+                </div>
+                <p class="text-2xl font-bold text-gray-800">
+                    <%= kpis.recentBookings %>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="bg-white rounded-t-xl shadow-md mb-0">
+            <div class="flex border-b">
+                <button data-tab="users" id="tab-users" class="tab-btn tab-active px-6 py-4 font-semibold transition-all">
+          <i class="fas fa-users mr-2"></i>Utilisateurs
+        </button>
+                <button data-tab="groups" id="tab-groups" class="tab-btn px-6 py-4 font-semibold text-gray-600 hover:text-gray-800 transition-all">
+          <i class="fas fa-music mr-2"></i>Groupes
+        </button>
+                <button data-tab="concerts" id="tab-concerts" class="tab-btn px-6 py-4 font-semibold text-gray-600 hover:text-gray-800 transition-all">
+          <i class="fas fa-calendar-alt mr-2"></i>Concerts
+        </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-b-xl shadow-md p-6">
+
+            <div id="content-users" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Gestion des Utilisateurs</h2>
+                    <div class="text-sm text-gray-600">
+                        Total: <span class="font-bold"><%= users.length %></span> utilisateurs
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôles</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% users.forEach(user => { %>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                                                    <%= user.name.charAt(0).toUpperCase() %>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    <%= user.name %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <%= user.email %>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <% user.roles.forEach(role => { %>
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                      <%= role %>
+                    </span>
+                                            <% }); %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <%= new Date(user.createdAt).toLocaleDateString('fr-FR') %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <% if (!user.roles.includes('admin')) { %>
+                                            <button data-user-id="<%= user._id %>" data-user-name="<%= user.name %>" class="make-admin-btn text-blue-600 hover:text-blue-900 transition">
+                                            <i class="fas fa-user-shield mr-1"></i>Admin
+                                        </button>
+                                            <% } %>
+                                                <button data-user-id="<%= user._id %>" data-user-name="<%= user.name %>" class="delete-user-btn text-red-600 hover:text-red-900 transition">
+                                        <i class="fas fa-trash mr-1"></i>Supprimer
+                                    </button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="content-groups" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Gestion des Groupes</h2>
+                    <button data-href="/groups/create/form" class="nav-btn bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+            <i class="fas fa-plus mr-2"></i>Créer un groupe
+          </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% groups.forEach(group => { %>
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+                            <img src="<%= group.picture_url || 'https://via.placeholder.com/400x300' %>" alt="<%= group.name %>" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">
+                                    <%= group.name %>
+                                </h3>
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mb-3">
+                <%= group.genre %>
+              </span>
+                                <div class="flex space-x-2">
+                                    <button data-group-id="<%= group._id %>" class="edit-group-btn flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm">
+                                    <i class="fas fa-edit mr-1"></i>Modifier
+                                </button>
+                                    <button data-group-id="<%= group._id %>" data-group-name="<%= group.name %>" class="delete-group-btn flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm">
+                                    <i class="fas fa-trash mr-1"></i>Supprimer
+                                </button>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                </div>
+            </div>
+
+            <div id="content-concerts" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Gestion des Concerts</h2>
+                    <button data-href="/concerts/create/form" class="nav-btn bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+            <i class="fas fa-plus mr-2"></i>Créer un concert
+          </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Concert</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Groupe</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tickets</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% concerts.forEach(concert => { %>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            <%= concert.name_concert %>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            <%= concert.genre %>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <%= concert.name_group %>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <%= new Date(concert.date).toLocaleDateString('fr-FR') %>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            <%= new Date(concert.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) %>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <%= concert.place %>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">
+                                            <%= concert.price %> FCFA</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            <span class="text-green-600 font-semibold"><%= concert.ticket_left %></span> /
+                                            <%= concert.number_of_ticket %>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            <%= concert.ticket_sold %> vendus</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                        <button data-concert-id="<%= concert._id %>" class="edit-concert-btn text-blue-600 hover:text-blue-900 transition">
+                                        <i class="fas fa-edit mr-1"></i>Modifier
+                                    </button>
+                                        <button data-concert-id="<%= concert._id %>" data-concert-name="<%= concert.name_concert %>" class="delete-concert-btn text-red-600 hover:text-red-900 transition">
+                                        <i class="fas fa-trash mr-1"></i>Supprimer
+                                    </button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+                tab.classList.remove('tab-active');
+                tab.classList.add('text-gray-600');
+            });
+
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            activeTab.classList.add('tab-active');
+            activeTab.classList.remove('text-gray-600');
+        }
+
+        async function makeAdmin(userId) {
+            if (!confirm('Voulez-vous vraiment promouvoir cet utilisateur en administrateur ?')) return;
+
+            try {
+                const response = await fetch(`/admin/users/${userId}/make-admin`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Utilisateur promu en administrateur !');
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la promotion de l\'utilisateur');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la promotion de l\'utilisateur');
+            }
+        }
+
+        async function deleteUser(userId, userName) {
+            if (!confirm(`Voulez-vous vraiment supprimer l'utilisateur "${userName}" ? Cette action est irréversible.`)) return;
+
+            try {
+                const response = await fetch(`/admin/users/${userId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok || response.status === 204) {
+                    alert('Utilisateur supprimé avec succès !');
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la suppression de l\'utilisateur');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression de l\'utilisateur');
+            }
+        }
+
+        async function deleteGroup(groupId, groupName) {
+            if (!confirm(`Voulez-vous vraiment supprimer le groupe "${groupName}" ? Cette action est irréversible.`)) return;
+
+            try {
+                const response = await fetch(`/groups/${groupId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok || response.status === 204) {
+                    alert('Groupe supprimé avec succès !');
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la suppression du groupe');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression du groupe');
+            }
+        }
+
+        function editGroup(groupId) {
+            window.location.href = `/groups/${groupId}/edit`;
+        }
+
+        async function deleteConcert(concertId, concertName) {
+            if (!confirm(`Voulez-vous vraiment supprimer le concert "${concertName}" ? Cette action est irréversible.`)) return;
+
+            try {
+                const response = await fetch(`/concerts/${concertId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    alert('Concert supprimé avec succès !');
+                    location.reload();
+                } else {
+                    alert('Erreur lors de la suppression du concert');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression du concert');
+            }
+        }
+
+        function editConcert(concertId) {
+            window.location.href = `/concerts/${concertId}/edit`;
+        }
+
+        setInterval(async() => {
+            try {
+                const response = await fetch('/admin/kpis');
+                const kpis = await response.json();
+                console.log('KPIs mis à jour:', kpis);
+            } catch (error) {
+                console.error('Erreur lors du rafraîchissement des KPIs:', error);
+            }
+        }, 30000);
+
+        // Attach listeners to buttons - execute immediately since DOM is already loaded
+
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                switchTab(tabName);
+            });
+        });
+
+        // Navigation buttons (create group/concert)
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.location.href = btn.dataset.href;
+            });
+        });
+
+        // User actions
+        document.querySelectorAll('.make-admin-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const userId = btn.dataset.userId;
+                makeAdmin(userId);
+            });
+        });
+
+        document.querySelectorAll('.delete-user-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const userId = btn.dataset.userId;
+                const userName = btn.dataset.userName;
+                deleteUser(userId, userName);
+            });
+        });
+
+        // Group actions
+        document.querySelectorAll('.edit-group-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const groupId = btn.dataset.groupId;
+                editGroup(groupId);
+            });
+        });
+
+        document.querySelectorAll('.delete-group-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const groupId = btn.dataset.groupId;
+                const groupName = btn.dataset.groupName;
+                deleteGroup(groupId, groupName);
+            });
+        });
+
+        // Concert actions
+        document.querySelectorAll('.edit-concert-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const concertId = btn.dataset.concertId;
+                editConcert(concertId);
+            });
+        });
+
+        document.querySelectorAll('.delete-concert-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const concertId = btn.dataset.concertId;
+                const concertName = btn.dataset.concertName;
+                deleteConcert(concertId, concertName);
+            });
+        });
+    </script>
+
+    <%- include('../layout/footer') %>
+
+</body>
+
+</html>

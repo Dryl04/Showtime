@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver -
+        <%= concert.name_concert %> - MyShowTime</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .ticket-card {
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-card.selected {
+            border-color: #3b82f6;
+            background-color: #f3f4f6;
+        }
+        
+        .ticket-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center hover:text-blue-200 transition">
+                        <i class="fas fa-music mr-3 text-2xl"></i>
+                        <h1 class="text-xl font-bold">MyShowTime</h1>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/" class="hover:text-blue-200 transition">
+                        <i class="fas fa-home mr-2"></i>Accueil
+                    </a>
+                    <a href="/" class="hover:text-blue-200 transition">
+                        <i class="fas fa-calendar-alt mr-2"></i>Concerts
+                    </a>
+                    <% if (user) { %>
+                        <a href="/users/me" class="hover:text-gray-200 transition">
+                            <i class="fas fa-user mr-2"></i>Profil
+                        </a>
+                        <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div class="text-center mb-10">
+            <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                <i class="fas fa-ticket-alt text-blue-600 text-5xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Réserver vos billets</h1>
+            <p class="text-xl text-gray-600">
+                <%= concert.name_concert %>
+            </p>
+            <p class="text-lg text-blue-600 font-semibold">
+                <%= concert.name_group %>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+
+                    <% if (locals.error) { %>
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <p>
+                                    <%= error %>
+                                </p>
+                            </div>
+                        </div>
+                        <% } %>
+
+                            <% if (locals.success) { %>
+                                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        <p>
+                                            <%= success %>
+                                        </p>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <form action="/bookings" method="POST" id="bookingForm">
+                                        <input type="hidden" name="concert_id" value="<%= concert._id %>">
+
+                                        <div class="mb-8">
+                                            <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                                                <i class="fas fa-ticket-alt text-blue-600 mr-2"></i> Informations du billet
+                                            </h2>
+
+                                            <div class="ticket-card p-6 rounded-xl bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200">
+                                                <div class="flex items-center justify-between mb-4">
+                                                    <div>
+                                                        <p class="text-sm text-gray-600 mb-1">Prix unitaire</p>
+                                                        <p class="text-3xl font-bold text-green-600">
+                                                            <%= concert.price %> <span class="text-lg">FCFA</span>
+                                                        </p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <p class="text-sm text-gray-600 mb-1">Places disponibles</p>
+                                                        <p class="text-2xl font-bold text-blue-600">
+                                                            <i class="fas fa-chair mr-2"></i>
+                                                            <%= concert.ticket_left || 0 %>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <% if ((concert.ticket_left || 0) === 0) { %>
+                                                    <div class="bg-red-100 border-2 border-red-400 text-red-700 text-center py-3 rounded-lg font-bold">
+                                                        <i class="fas fa-exclamation-triangle mr-2"></i>Concert complet
+                                                    </div>
+                                                    <% } else if ((concert.ticket_left || 0) < 10) { %>
+                                                        <div class="bg-yellow-100 border-2 border-yellow-400 text-yellow-700 text-center py-2 rounded-lg font-semibold text-sm">
+                                                            <i class="fas fa-fire mr-2"></i>Plus que
+                                                            <%= concert.ticket_left %> places disponibles !
+                                                        </div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-8">
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                                <i class="fas fa-sort-numeric-up mr-2"></i>Nombre de billets
+                                            </label>
+                                            <select name="quantity" id="quantitySelect" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors" <% if ((concert.ticket_left || 0)===0 ) { %>disabled<% } %>>
+                                                <option value="">Sélectionnez le nombre</option>
+                                                <% 
+                                                const maxTickets = Math.min(concert.ticket_left || 0, 10);
+                                                for (let i = 1; i <= maxTickets; i++) { 
+                                                %>
+                                                    <option value="<%= i %>"><%= i %> <%= i === 1 ? 'billet' : 'billets' %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+
+                                        <!-- Contact Info -->
+                                        <div class="mb-8">
+                                            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                                                <i class="fas fa-user text-blue-600 mr-2"></i> Informations de contact
+                                            </h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom complet</label>
+                                                    <input type="text" name="customer_name" value="<%= user.name %>" required minlength="2" maxlength="100" pattern="[A-Za-zÀ-ÿ\s'-]+" title="Le nom doit contenir uniquement des lettres (2-100 caractères)" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                                    <input type="email" name="customer_email" value="<%= user.email %>" required maxlength="255" title="Veuillez entrer une adresse e-mail valide (max 255 caractères)" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Submit Button -->
+                                        <div class="flex flex-col sm:flex-row gap-4">
+                                            <% if ((concert.ticket_left || 0) > 0) { %>
+                                                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg">
+                                                    <i class="fas fa-check-circle mr-2"></i>Confirmer la réservation
+                                                </button>
+                                                <% } else { %>
+                                                    <button type="button" disabled class="flex-1 bg-gray-400 text-white py-4 px-6 rounded-lg font-semibold text-lg cursor-not-allowed">
+                                                    <i class="fas fa-times-circle mr-2"></i>Concert complet
+                                                </button>
+                                                    <% } %>
+                                                        <a href="/concerts/<%= concert._id %>/detail" class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-4 px-6 rounded-lg font-semibold transition-colors text-center">
+                                                            <i class="fas fa-arrow-left mr-2"></i>Retour
+                                                        </a>
+                                        </div>
+                                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-shopping-cart text-blue-600 mr-2"></i> Récapitulatif
+                    </h3>
+
+                    <!-- Concert Info -->
+                    <div class="mb-6">
+                        <% if (concert.picture_url) { %>
+                            <img src="<%= concert.picture_url %>" alt="<%= concert.name_concert %>" class="w-full h-40 object-cover rounded-lg mb-4">
+                            <% } %>
+
+                                <h4 class="font-semibold text-lg text-gray-800 mb-2">
+                                    <%= concert.name_concert %>
+                                </h4>
+                                <p class="text-blue-600 font-medium mb-1">
+                                    <%= concert.name_group %>
+                                </p>
+
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <p>
+                                        <i class="fas fa-music text-blue-600 mr-2"></i>
+                                        <span class="font-medium"><%= concert.genre %></span>
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
+                                        <%= new Date(concert.date).toLocaleDateString('fr-FR', { 
+                                            weekday: 'long', 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric' 
+                                        }) %>
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-clock text-blue-600 mr-2"></i>
+                                        <%= new Date(concert.date).toLocaleTimeString('fr-FR', { 
+                                            hour: '2-digit', 
+                                            minute: '2-digit' 
+                                        }) %>
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-map-marker-alt text-red-600 mr-2"></i>
+                                        <%= concert.place %>
+                                    </p>
+                                </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Quantité:</span>
+                                <span id="summaryQuantity" class="font-semibold">-</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Prix unitaire:</span>
+                                <span id="summaryUnitPrice" class="font-semibold">-</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t pt-4">
+                            <div class="flex justify-between items-center text-xl font-bold">
+                                <span class="text-gray-800">Total:</span>
+                                <span id="summaryTotal" class="text-green-600">0 FCFA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <%- include('../layout/footer') %>
+
+        <script>
+            const unitPrice = <%= concert.price || 0 %>;
+
+            const quantitySelect = document.getElementById('quantitySelect');
+            const summaryQuantity = document.getElementById('summaryQuantity');
+            const summaryUnitPrice = document.getElementById('summaryUnitPrice');
+            const summaryTotal = document.getElementById('summaryTotal');
+
+            function updateSummary() {
+                const quantity = parseInt(quantitySelect.value) || 0;
+
+                if (quantity > 0) {
+                    const total = unitPrice * quantity;
+
+                    summaryQuantity.textContent = `${quantity} ${quantity === 1 ? 'billet' : 'billets'}`;
+                    summaryUnitPrice.textContent = `${unitPrice.toLocaleString()} FCFA`;
+                    summaryTotal.textContent = `${total.toLocaleString()} FCFA`;
+                } else {
+                    summaryQuantity.textContent = '-';
+                    summaryUnitPrice.textContent = '-';
+                    summaryTotal.textContent = '0 FCFA';
+                }
+            }
+
+            quantitySelect.addEventListener('change', updateSummary);
+
+            document.getElementById('bookingForm').addEventListener('submit', function(e) {
+                const quantity = quantitySelect.value;
+
+                if (!quantity || quantity === '') {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner la quantité de billets');
+                    return false;
+                }
+
+                const total = unitPrice * parseInt(quantity);
+                const confirm = window.confirm(
+                    `Confirmer la réservation de ${quantity} billet(s) pour un total de ${total.toLocaleString()} FCFA ?`
+                );
+
+                if (!confirm) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            updateSummary();
+        </script>
+
+</body>
+
+</html>

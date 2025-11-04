@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupes Musicaux - MyShowTime</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .genre-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center hover:text-blue-200 transition">
+                        <i class="fas fa-music mr-3 text-2xl"></i>
+                        <h1 class="text-xl font-bold">MyShowTime</h1>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/" class="hover:text-blue-200 transition">
+                        <i class="fas fa-home mr-2"></i>Accueil
+                    </a>
+                    <a href="/" class="hover:text-blue-200 transition">
+                        <i class="fas fa-calendar-alt mr-2"></i>Concerts
+                    </a>
+                    <% if (user) { %>
+                        <a href="/users/me" class="hover:text-blue-200 transition">
+                            <i class="fas fa-user mr-2"></i>Profil
+                        </a>
+                        <% if (user.roles && user.roles.includes('admin')) { %>
+                            <a href="/admin/dashboard" class="hover:text-blue-200 transition">
+                                <i class="fas fa-cog mr-2"></i>Admin
+                            </a>
+                            <% } %>
+                                <% } else { %>
+                                    <a href="/auth/login" class="hover:text-blue-200 transition">
+                                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                                    </a>
+                                    <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <div class="text-center mb-12">
+            <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                <i class="fas fa-users text-blue-600 text-5xl"></i>
+            </div>
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">Groupes Musicaux</h1>
+            <p class="text-xl text-gray-600">Découvrez vos artistes préférés et suivez leur actualité</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-search mr-2"></i>Rechercher un groupe
+                    </label>
+                    <input type="text" id="searchInput" placeholder="Nom du groupe..." class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-filter mr-2"></i>Filtrer par genre
+                    </label>
+                    <select id="genreFilter" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                        <option value="">Tous les genres</option>
+                        <option value="Rock">Rock</option>
+                        <option value="Pop">Pop</option>
+                        <option value="Jazz">Jazz</option>
+                        <option value="Classical">Classique</option>
+                        <option value="Hip-Hop">Hip-Hop</option>
+                        <option value="Electronic">Électronique</option>
+                        <option value="Country">Country</option>
+                        <option value="Reggae">Reggae</option>
+                        <option value="Blues">Blues</option>
+                        <option value="Metal">Metal</option>
+                        <option value="Folk">Folk</option>
+                        <option value="R&B">R&B</option>
+                        <option value="Soul">Soul</option>
+                        <option value="Funk">Funk</option>
+                        <option value="Indie">Indie</option>
+                        <option value="Punk">Punk</option>
+                        <option value="Latin">Latin</option>
+                        <option value="World">World Music</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="groupsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <% if (groups && groups.length > 0) { %>
+                <% groups.forEach(group => { %>
+                    <div class="card bg-white rounded-xl shadow-lg overflow-hidden group-card" data-name="<%= group.name.toLowerCase() %>" data-genre="<%= group.genre %>">
+
+                        <% if (group.picture_url) { %>
+                            <img src="<%= group.picture_url %>" alt="<%= group.name %>" class="w-full h-56 object-cover">
+                            <% } else { %>
+                                <div class="w-full h-56 bg-blue-600 flex items-center justify-center">
+                                    <i class="fas fa-music text-6xl text-white"></i>
+                                </div>
+                                <% } %>
+
+                                    <div class="p-6">
+                                        <div class="flex items-start justify-between mb-3">
+                                            <h3 class="text-2xl font-bold text-gray-800 group-name">
+                                                <%= group.name %>
+                                            </h3>
+                                            <span class="genre-badge bg-blue-100 text-blue-700">
+                                    <%= group.genre %>
+                                </span>
+                                        </div>
+
+                                        <p class="text-gray-600 mb-4 line-clamp-2">
+                                            <%= group.description || 'Aucune description disponible' %>
+                                        </p>
+
+                                        <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                            <div>
+                                                <i class="fas fa-calendar-alt mr-2"></i> Créé en
+                                                <%= new Date(group.created_at).getFullYear() %>
+                                            </div>
+                                            <% if (group.members && group.members.length > 0) { %>
+                                                <div>
+                                                    <i class="fas fa-user-friends mr-2"></i>
+                                                    <%= group.members.length %> membre(s)
+                                                </div>
+                                                <% } %>
+                                        </div>
+
+                                        <div class="flex space-x-2">
+                                            <a href="/groups/<%= group._id %>/detail" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors">
+                                                <i class="fas fa-eye mr-2"></i>Voir détails
+                                            </a>
+
+                                            <% if (user) { %>
+                                                <button onclick="toggleWishlist('<%= group._id %>')" id="wishlist-<%= group._id %>" class="bg-red-100 hover:bg-red-200 text-red-600 py-2 px-4 rounded-lg transition-colors">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                                <% } %>
+                                        </div>
+                                    </div>
+                    </div>
+                    <% }); %>
+                        <% } else { %>
+                            <div class="col-span-full text-center py-20">
+                                <i class="fas fa-music text-6xl text-gray-300 mb-4"></i>
+                                <p class="text-xl text-gray-500">Aucun groupe disponible pour le moment</p>
+                            </div>
+                            <% } %>
+        </div>
+
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+            <p class="text-xl text-gray-500">Aucun groupe ne correspond à votre recherche</p>
+        </div>
+
+    </div>
+
+    <%- include('../layout/footer') %>
+
+        <script>
+            const searchInput = document.getElementById('searchInput');
+            const genreFilter = document.getElementById('genreFilter');
+            const groupCards = document.querySelectorAll('.group-card');
+            const noResults = document.getElementById('noResults');
+            const groupsContainer = document.getElementById('groupsContainer');
+
+            function filterGroups() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedGenre = genreFilter.value;
+                let visibleCount = 0;
+
+                groupCards.forEach(card => {
+                    const name = card.dataset.name;
+                    const genre = card.dataset.genre;
+
+                    const matchesSearch = name.includes(searchTerm);
+                    const matchesGenre = !selectedGenre || genre === selectedGenre;
+
+                    if (matchesSearch && matchesGenre) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    groupsContainer.style.display = 'none';
+                    noResults.classList.remove('hidden');
+                } else {
+                    groupsContainer.style.display = 'grid';
+                    noResults.classList.add('hidden');
+                }
+            }
+
+            searchInput.addEventListener('input', filterGroups);
+            genreFilter.addEventListener('change', filterGroups);
+
+            async function toggleWishlist(groupId) {
+                const button = document.getElementById(`wishlist-${groupId}`);
+                const icon = button.querySelector('i');
+
+                try {
+                    const isInWishlist = icon.classList.contains('fas');
+
+                    if (isInWishlist) {
+                        const response = await fetch(`/wishlist/groups/${groupId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            icon.classList.remove('fas');
+                            icon.classList.add('far');
+                            button.classList.remove('bg-red-200', 'text-red-700');
+                            button.classList.add('bg-red-100', 'text-red-600');
+                        }
+                    } else {
+                        const response = await fetch(`/wishlist/groups/${groupId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            icon.classList.remove('far');
+                            icon.classList.add('fas');
+                            button.classList.remove('bg-red-100', 'text-red-600');
+                            button.classList.add('bg-red-200', 'text-red-700');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Erreur wishlist:', error);
+                    alert('Erreur lors de la mise à jour de la wishlist');
+                }
+            }
+
+            <% if (user) { %>
+            async function checkWishlistStatus() {
+                <% groups.forEach(group => { %>
+                try {
+                    const response = await fetch('/wishlist/groups/<%= group._id %>/check');
+                    const data = await response.json();
+                    if (data.inWishlist) {
+                        const button = document.getElementById('wishlist-<%= group._id %>');
+                        const icon = button.querySelector('i');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        button.classList.remove('bg-red-100', 'text-red-600');
+                        button.classList.add('bg-red-200', 'text-red-700');
+                    }
+                } catch (error) {
+                    console.error('Erreur vérification wishlist:', error);
+                }
+                <% }); %>
+            }
+            checkWishlistStatus();
+            <% } %>
+        </script>
+
+</body>
+
+</html>
